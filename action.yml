@@ -1,0 +1,45 @@
+name: release notes
+description: Render grouped release notes from git history for one tag. No dependencies beyond git and the gh CLI.
+author: hyperpuncher
+
+inputs:
+    tag:
+        description: Tag to render notes for.
+        required: false
+        default: ${{ github.ref_name }}
+    previous_tag:
+        description: Tag to compare against. Detected from the parent of `tag` when empty.
+        required: false
+        default: ""
+    output:
+        description: Path of the markdown file to write.
+        required: false
+        default: ${{ runner.temp }}/release-notes.md
+    contributors:
+        description: Add a contributors section, with GitHub logins when they can be resolved.
+        required: false
+        default: "true"
+    token:
+        description: Token used to resolve GitHub logins. Needs read access to the repository.
+        required: false
+        default: ${{ github.token }}
+
+outputs:
+    path:
+        description: Path of the markdown file that was written.
+        value: ${{ steps.notes.outputs.path }}
+
+runs:
+    using: composite
+    steps:
+        - id: notes
+          shell: bash
+          run: bash "${{ github.action_path }}/notes.sh"
+          env:
+              TAG: ${{ inputs.tag }}
+              PREVIOUS_TAG: ${{ inputs.previous_tag }}
+              OUTPUT: ${{ inputs.output }}
+              CONTRIBUTORS: ${{ inputs.contributors }}
+              REPOSITORY: ${{ github.repository }}
+              SERVER_URL: ${{ github.server_url }}
+              GH_TOKEN: ${{ inputs.token }}

@@ -1,0 +1,4 @@
+[fmt]
+printWidth = 90
+tabWidth = 4
+useTabs = true
